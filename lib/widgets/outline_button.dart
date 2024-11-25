@@ -5,16 +5,18 @@ import 'package:pomodoro/utils/fonts.dart';
 class PomodoroOutlinedButton extends StatelessWidget {
   final Color color;
   final String label;
+  final VoidCallback? onPressed;
   const PomodoroOutlinedButton({
     super.key,
     this.color = const Color.fromARGB(255, 35, 90, 112),
     this.label = '',
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onPressed,
       enableFeedback: true,
       child: Container(
         width: 150,
