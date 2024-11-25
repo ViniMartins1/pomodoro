@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pomodoro/bloc/pomodoro_bloc.dart';
+import 'package:pomodoro/pages/pomodoro_page.dart';
 
 class PomodoroApp extends StatelessWidget {
   const PomodoroApp({super.key});
@@ -13,7 +16,16 @@ class PomodoroApp extends StatelessWidget {
         ),
       ),
       debugShowCheckedModeBanner: false,
-      home: Container(),
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => PomodoroBloc(
+              duration: const Duration(minutes: 25),
+            ),
+          ),
+        ],
+        child: const PomodoroPage(),
+      ),
     );
   }
 }
