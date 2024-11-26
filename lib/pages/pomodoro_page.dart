@@ -60,28 +60,53 @@ class _PomodoroPageState extends State<PomodoroPage> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: DesignConstants.cardPadding),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: PomodoroOutlinedButton(
-                    label: 'Iniciar',
-                    onPressed: () {
-                      context.read<PomodoroBloc>().add(StartPomodoroEvent());
-                      showSnackbar(context, 'Pomodoro iniciado!');
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: PomodoroOutlinedButton(
-                    label: 'Parar',
-                    onPressed: () {
-                      context.read<PomodoroBloc>().add(ResetPomodoroEvent());
-                    },
-                  ),
-                ),
-              ],
+            child: BlocBuilder<PomodoroBloc, PomodoroState>(
+              builder: (context, state) {
+                String startButton = 'Iniciar';
+                String stopButton = 'Parar';
+
+                if (state is PomodoroPaused) {
+                  startButton = 'Continuar';
+                  stopButton = 'Resetar';
+                } else if (state is PomodoroComplete || state is PomodoroInitial) {
+                  stopButton = 'Resetar';
+                }
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: PomodoroOutlinedButton(
+                        label: startButton,
+                        onPressed: () {
+                          if (state is PomodoroInitial || state is PomodoroComplete) {
+                            context.read<PomodoroBloc>().add(StartPomodoroEvent());
+                            showSnackbar(context, 'Pomodoro iniciado!');
+                          } else if (state is PomodoroPaused) {
+                            context.read<PomodoroBloc>().add(ResumePomodoroEvent());
+                            showSnackbar(context, 'Pomodoro retomado!');
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: PomodoroOutlinedButton(
+                        label: stopButton,
+                        onPressed: () {
+                          if (state is PomodoroRunning) {
+                            context.read<PomodoroBloc>().add(PausePomodoroEvent());
+                            showSnackbar(context, 'Pomodoro pausado!');
+                          } else {
+                            context.read<PomodoroBloc>().add(ResetPomodoroEvent());
+                            showSnackbar(context, 'Pomodoro resetado!');
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
